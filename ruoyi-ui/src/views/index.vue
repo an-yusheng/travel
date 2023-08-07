@@ -1,13 +1,31 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" >
-      <el-form-item label="景点名称" prop="title" >
+      <el-form-item label="景点名称" prop="name" >
         <el-input
-          v-model="queryParams.title"
+          v-model="queryParams.name"
           placeholder="请输入景点名称"
           clearable
           @keyup.enter.native="handleQuery"
+          v-loading.fullscreen.lock="loading"
         />
+      </el-form-item>
+      <el-form-item label="计划开始时间" prop="biginDate" >
+        <el-date-picker
+          v-model="queryParams.biginDate"
+          type="date"
+          placeholder="选择日期"
+          @keyup.enter.native="handleQuery">
+        </el-date-picker>
+      </el-form-item>
+      
+      <el-form-item label="计划结束时间" prop="endDate" >
+        <el-date-picker
+          v-model="queryParams.endDate"
+          type="date"
+          placeholder="选择日期"
+          @keyup.enter.native="handleQuery">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -19,17 +37,20 @@
 
     <div>
       <el-row>
-        <el-col :span="4" v-for="item in this.list" :key="item" style="margin: 20px;">
-          <el-card :body-style="{ padding: '10px' }">
-            <img :src="item.image" class="image">
-            <div style="padding: 14px;">
-              <span>{{ item.name }}</span>
-              <div class="bottom clearfix">
-              <el-rate v-model="item.recommended" disabled></el-rate>
-              </div>
-              <div class="bottom clearfix">
-                <time class="time">{{ item.desc }}</time>
-                <!-- <el-button type="text" class="button">操作按钮</el-button> -->
+        <el-col :span="4" v-for="item in this.list" :key="item" style="width: 250px;height: 400px; margin-left: 30px;">
+          <el-card :body-style="{ padding: '10px',height: '350px',background: '#2b2f3a' }"> 
+            <div @click="openTravel(item)" style="cursor: pointer;">
+              <img :src="item.image" class="image" style="height: 150px;">
+              <div style="padding: 14px;color: #ffffff;">
+                <span>{{ item.name }}</span>
+                <div class="bottom clearfix">
+                <el-rate v-model="item.recommended" disabled></el-rate>
+                </div>
+                <div class="bottom clearfix">
+                  <time class="time">{{ item.desc }}</time>
+                  <!-- <el-button type="text" class="button">操作按钮</el-button> -->
+                </div>
+                
               </div>
             </div>
           </el-card>
@@ -37,47 +58,71 @@
       </el-row>
     </div>
 
-    <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
+    <!-- <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" /> -->
 
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
-      <el-form ref="form" :model="form" label-width="120px">
-        <el-col :span="24">
-          <el-form-item
-            label="案件名称"
-            prop="title"
-          >
-          <el-input v-model="form.title" placeholder="请输入案件名称" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item
-            label="取证人"
-            prop="forensic"
-          >
-          <el-input v-model="form.forensic" placeholder="请输入取证人" />
-          </el-form-item>
-        </el-col>
-        
-        <el-col :span="24">
-          <el-form-item
-            label="取证工具"
-            prop="forensictool"
-          >
-          <el-input v-model="form.forensictool" placeholder="请输入取证工具" />
-          </el-form-item>
-        </el-col>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+      <el-image :src="this.form.image" style="cursor: pointer;"></el-image>
+      <el-descriptions class="margin-top" :column="1" :size="size" border>
+        <template slot="extra" >
+            <div v-if="this.form.wish === false" @click="onwish(true)" style="margin-top: 10px;">
+              <el-button type="warning" icon="el-icon-star-off" circle></el-button>
+              <span style="margin-left: 5px;font-size: 2px;">加入心愿单</span>
+            </div>
+            <div v-if="this.form.wish" @click="onwish(false)" style="margin-top: 10px;">
+              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+              <span style="margin-left: 5px;font-size: 2px;">取消心愿单</span>
+            </div>
+          </template>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-camera-solid"></i>
+            景点名称：
+          </template>
+          {{ this.form.name }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-star-off"></i>
+            推荐级别
+          </template>
+          <el-rate
+            v-model="this.form.recommended"
+            disabled
+            show-text
+            text-color="#ff9900"
+            score-template="{value}">
+          </el-rate>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-s-comment"></i>
+            景点描述
+          </template>
+          {{ this.form.desc }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-s-ticket"></i>
+            景点标签
+          </template>
+            <el-tag  v-for="item in this.form.typeName" :key="item" type="danger" style="margin: 2px;">{{ item }}</el-tag>
+      
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-location-outline"></i>
+            景点地址
+          </template>
+          {{ this.form.address }}
+        </el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
       
   </div>
 </template>
 
 <script>
-import { list, upload, saveAttractions, removeAttractions, editAttractions } from "@/api/trave/trave";
+import { cpmputList, saveAttractionsUser,removeAttractionsUser } from "@/api/trave/trave";
 
 export default {
   name: "Online",
@@ -93,9 +138,8 @@ export default {
       pageSize: 10,
       // 查询参数
       queryParams: {
-        uploadedBy: undefined,
-        belongingPerson: undefined,
-        recipient: undefined
+        biginDate:undefined,
+        endDate:undefined
       },
       title: "",
       open: false,
@@ -110,7 +154,8 @@ export default {
     /** 查询登录日志列表 */
     getList() {
       this.loading = true;
-      list(this.queryParams).then(response => {
+      console.log(this.queryParams)
+      cpmputList(this.queryParams).then(response => {
         this.list = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -124,12 +169,33 @@ export default {
     reset(){
       this.form = {};
     },
-    /** 编辑 */
-    editCase(row){
+    openTravel(row){
       this.reset();
       this.open = true;
-      this.title = "修改案件";
+      this.title = "景点信息";
       this.form = row;
+    },
+    onwish(wish){
+        let params = {"attractionsId":this.form.id}
+      if(wish){
+        saveAttractionsUser(params).then(response => {
+            if(response.code === 200){
+              this.$modal.msgSuccess("添加心愿成功");
+              this.form.wish = wish
+            }else{
+              this.$modal.msgError(response.msg);
+            }
+          });
+      }else{
+        removeAttractionsUser(params).then(response => {
+            if(response.code === 200){
+              this.$modal.msgSuccess("取消心愿成功");
+              this.form.wish = wish
+            }else{
+              this.$modal.msgError(response.msg);
+            }
+          });
+      }
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -160,7 +226,7 @@ export default {
 <style>
   .time {
     font-size: 13px;
-    color: #999;
+    color: #ffffff;
   }
   
   .bottom {
@@ -187,4 +253,5 @@ export default {
   .clearfix:after {
       clear: both
   }
+  
 </style>

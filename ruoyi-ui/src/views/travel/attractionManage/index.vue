@@ -375,6 +375,7 @@ export default {
     },
     //自定义上传文件
     uploadFile (file) {
+      
       this.formData.append("file", file.file);
       // console.log(file.file, "sb2");
     },

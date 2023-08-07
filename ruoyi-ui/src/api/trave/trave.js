@@ -35,20 +35,53 @@ export function editAttractions(data) {
   })
 }
 
-// 查询案件列表
-export function caseList(query) {
+export function updatePreference(data) {
   return request({
-    url: '/encryption/file/caseList',
+    url: '/travel/attractions/updatePreference',
+    method: 'post',
+    data: data
+  })
+}
+
+
+export function userPreference(query) {
+  return request({
+    url: '/travel/attractions/userPreference',
     method: 'get',
     params: query
   })
 }
 
-
-// 查询区块记录
-export function blockList(query) {
+export function cpmputList(data) {
   return request({
-    url: '/encryption/file/blockList',
+    url: '/travel/attractions/cpmputList',
+    method: 'post',
+    data: data
+  })
+}
+
+export function saveAttractionsUser(data) {
+  return request({
+    url: '/travel/attractionsUser/save',
+    method: 'post',
+    data: data
+  })
+}
+
+export function removeAttractionsUser(data) {
+  return request({
+    url: '/travel/attractionsUser/remove',
+    method: 'post',
+    data: data
+  })
+}
+
+
+
+// 查询案件列表
+export function caseList(query) {
+  return request({
+    url: '/encryption/file/caseList',
     method: 'get',
     params: query
   })
@@ -62,58 +95,3 @@ export function upload(data) {
     data: data
   })
 }
-
-// 保存
-export function saveEncryFile(data) {
-  return request({
-    url: '/encryption/file/save',
-    method: 'post',
-    data: data
-  })
-}
-
-// 下载文件
-export function downloadEncryFile(data) {
-  return request({
-    url: '/encryption/file/downloadEncryFile',
-    method: 'post',
-    data: data
-  })
-}
-
-export function checkDownloadEncryFile(data) {
-  return request({
-    url: '/encryption/file/checkDownloadEncryFile',
-    method: 'post',
-    data: data
-  })
-}
-
-
-export function transferFile(data) {
-  return request({
-    url: '/encryption/file/transferFile',
-    method: 'post',
-    data: data
-  })
-}
-
-// 上链
-export function upperChain(data) {
-  return request({
-    url: '/encryption/file/upperChain',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改案件
-export function updateCase(data) {
-  return request({
-    url: '/encryption/file/updateCase',
-    method: 'post',
-    data: data
-  })
-}
-
-

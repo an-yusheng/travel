@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.travel.mapper.UserPreferenceMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.travel.domain.UserPreference">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="preference1" column="preference1" jdbcType="VARCHAR"/>
+            <result property="preference2" column="preference2" jdbcType="VARCHAR"/>
+            <result property="preference3" column="preference3" jdbcType="VARCHAR"/>
+            <result property="preference4" column="preference4" jdbcType="VARCHAR"/>
+            <result property="preference5" column="preference5" jdbcType="VARCHAR"/>
+            <result property="preference6" column="preference6" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,preference1,
+        preference2,preference3,preference4,
+        preference5,preference6
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_preference
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user_preference
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.travel.domain.UserPreference" useGeneratedKeys="true">
+        insert into user_preference
+        ( id,user_id,preference1
+        ,preference2,preference3,preference4
+        ,preference5,preference6)
+        values (#{id,jdbcType=INTEGER},#{userId,jdbcType=INTEGER},#{preference1,jdbcType=VARCHAR}
+        ,#{preference2,jdbcType=VARCHAR},#{preference3,jdbcType=VARCHAR},#{preference4,jdbcType=VARCHAR}
+        ,#{preference5,jdbcType=VARCHAR},#{preference6,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.travel.domain.UserPreference" useGeneratedKeys="true">
+        insert into user_preference
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="userId != null">user_id,</if>
+                <if test="preference1 != null">preference1,</if>
+                <if test="preference2 != null">preference2,</if>
+                <if test="preference3 != null">preference3,</if>
+                <if test="preference4 != null">preference4,</if>
+                <if test="preference5 != null">preference5,</if>
+                <if test="preference6 != null">preference6,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="userId != null">#{userId,jdbcType=INTEGER},</if>
+                <if test="preference1 != null">#{preference1,jdbcType=VARCHAR},</if>
+                <if test="preference2 != null">#{preference2,jdbcType=VARCHAR},</if>
+                <if test="preference3 != null">#{preference3,jdbcType=VARCHAR},</if>
+                <if test="preference4 != null">#{preference4,jdbcType=VARCHAR},</if>
+                <if test="preference5 != null">#{preference5,jdbcType=VARCHAR},</if>
+                <if test="preference6 != null">#{preference6,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.travel.domain.UserPreference">
+        update user_preference
+        <set>
+                <if test="userId != null">
+                    user_id = #{userId,jdbcType=INTEGER},
+                </if>
+                <if test="preference1 != null">
+                    preference1 = #{preference1,jdbcType=VARCHAR},
+                </if>
+                <if test="preference2 != null">
+                    preference2 = #{preference2,jdbcType=VARCHAR},
+                </if>
+                <if test="preference3 != null">
+                    preference3 = #{preference3,jdbcType=VARCHAR},
+                </if>
+                <if test="preference4 != null">
+                    preference4 = #{preference4,jdbcType=VARCHAR},
+                </if>
+                <if test="preference5 != null">
+                    preference5 = #{preference5,jdbcType=VARCHAR},
+                </if>
+                <if test="preference6 != null">
+                    preference6 = #{preference6,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ruoyi.travel.domain.UserPreference">
+        update user_preference
+        set 
+            user_id =  #{userId,jdbcType=INTEGER},
+            preference1 =  #{preference1,jdbcType=VARCHAR},
+            preference2 =  #{preference2,jdbcType=VARCHAR},
+            preference3 =  #{preference3,jdbcType=VARCHAR},
+            preference4 =  #{preference4,jdbcType=VARCHAR},
+            preference5 =  #{preference5,jdbcType=VARCHAR},
+            preference6 =  #{preference6,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+
+    <select id="selectByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_preference
+        where  user_id = #{userId,jdbcType=INTEGER}
+    </select>
+</mapper>
