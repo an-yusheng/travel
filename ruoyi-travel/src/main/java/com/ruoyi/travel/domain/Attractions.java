@@ -82,4 +82,14 @@ public class Attractions implements Serializable {
     private String[] type;
 
     private String[] typeName;
+
+    /**
+     * 分数
+     */
+    private Double score;
+
+    /**
+     * 是否心愿
+     */
+    private boolean wish;
 }

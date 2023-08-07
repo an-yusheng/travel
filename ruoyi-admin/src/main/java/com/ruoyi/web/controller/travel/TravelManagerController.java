@@ -5,16 +5,12 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.travel.domain.Attractions;
 import com.ruoyi.travel.domain.AttractionsUser;
-import com.ruoyi.travel.domain.EncryptFiles;
 import com.ruoyi.travel.domain.UserPreference;
 import com.ruoyi.travel.dto.AttractionsQuery;
 import com.ruoyi.travel.service.TravelManagerService;
-import com.ruoyi.travel.util.MultipartFileToFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
