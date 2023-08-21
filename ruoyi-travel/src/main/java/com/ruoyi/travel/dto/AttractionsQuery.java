@@ -17,6 +17,8 @@ public class AttractionsQuery {
      */
     private String name;
 
+    private String address;
+
     private Date biginDate;
 
     private Date endDate;

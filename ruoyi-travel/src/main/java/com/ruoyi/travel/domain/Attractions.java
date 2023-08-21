@@ -38,6 +38,11 @@ public class Attractions implements Serializable {
     private Integer recommended;
 
     /**
+     * 景点名称
+     */
+    private String city;
+
+    /**
      * 景点地址
      */
     private String address;

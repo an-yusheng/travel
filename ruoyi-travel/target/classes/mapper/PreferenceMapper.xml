@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.travel.mapper.PreferenceMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.travel.domain.Preference">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="preferenceType" column="preference_type" jdbcType="INTEGER"/>
+            <result property="preferenceName" column="preference_name" jdbcType="VARCHAR"/>
+            <result property="season" column="season" jdbcType="INTEGER"/>
+            <result property="seasonName" column="season_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,preference_type,preference_name,
+        season,season_name
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from preference
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from preference
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.travel.domain.Preference" useGeneratedKeys="true">
+        insert into preference
+        ( id,preference_type,preference_name
+        ,season,season_name)
+        values (#{id,jdbcType=INTEGER},#{preferenceType,jdbcType=INTEGER},#{preferenceName,jdbcType=VARCHAR}
+        ,#{season,jdbcType=INTEGER},#{seasonName,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ruoyi.travel.domain.Preference" useGeneratedKeys="true">
+        insert into preference
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="preferenceType != null">preference_type,</if>
+                <if test="preferenceName != null">preference_name,</if>
+                <if test="season != null">season,</if>
+                <if test="seasonName != null">season_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="preferenceType != null">#{preferenceType,jdbcType=INTEGER},</if>
+                <if test="preferenceName != null">#{preferenceName,jdbcType=VARCHAR},</if>
+                <if test="season != null">#{season,jdbcType=INTEGER},</if>
+                <if test="seasonName != null">#{seasonName,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.travel.domain.Preference">
+        update preference
+        <set>
+                <if test="preferenceType != null">
+                    preference_type = #{preferenceType,jdbcType=INTEGER},
+                </if>
+                <if test="preferenceName != null">
+                    preference_name = #{preferenceName,jdbcType=VARCHAR},
+                </if>
+                <if test="season != null">
+                    season = #{season,jdbcType=INTEGER},
+                </if>
+                <if test="seasonName != null">
+                    season_name = #{seasonName,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ruoyi.travel.domain.Preference">
+        update preference
+        set 
+            preference_type =  #{preferenceType,jdbcType=INTEGER},
+            preference_name =  #{preferenceName,jdbcType=VARCHAR},
+            season =  #{season,jdbcType=INTEGER},
+            season_name =  #{seasonName,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+
+    <select id="selectByName" resultType="java.lang.String">
+        select preference_name from preference where preference_type in
+        <foreach collection="types" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        GROUP BY preference_name
+    </select>
+</mapper>

@@ -3,11 +3,23 @@
     <el-container style="height: 100%; border: 1px solid #eee">
       <el-card style="width: 200px;padding: auto;">
         <div style="text-align:center;font-weight: bold;">心愿单</div>
-        <el-card style="height: 50px;margin-top: 10px;background-color: #fef0f0;border-color: #fde2e2;color: #f56c6c;font-size: 10px;" 
-        v-for="o in 4" :key="o" >
-            {{'列表内容 ' + o }}
-            <i class="el-icon-delete" style="float: right;cursor: pointer;"></i>
-        </el-card>
+        <div v-if="wish.length <= 0" style="margin-top: 100%;font-size: 10px;">
+          您的心愿单为空，快去添加景点吧
+          <div style="margin-left: 20%;">
+            <el-button type="primary" size="mini" @click="toIndex" style="margin-top: 20px;">添加</el-button>
+          </div>
+        </div>
+        <div v-if="wish.length > 0">
+          <div v-for="(item,index) in wish" :key="index">
+                <h3>{{  item.city }}</h3>
+            <el-card style="height: 50px;margin-top: 10px;background-color: #fef0f0;border-color: #fde2e2;color: #f56c6c;font-size: 10px;" 
+            v-for="(item2,index2) in item.data" :key="index2">
+                  {{ item2.name }}
+                  <i class="el-icon-delete" style="float: right;cursor: pointer; margin-left: 5px;" @click="removeWith(item2)"></i>
+                  <i class="el-icon-edit" style="float: right;cursor: pointer;" @click="addWish(item2)"></i>
+            </el-card>
+          </div>
+        </div>
       </el-card>
     <el-card class="box-card" style="margin-left: 20px;width: 100%;">
       <el-main>
@@ -15,8 +27,12 @@
           <template #dateCell="{data}">
             <div style="margin:0px" @click="calendarOnClick(data)">
               {{ data.day.split('-').slice(2).join() }} 
-              <div v-for="(i, index) in dayTime" :key="index">
-                <div v-if="data.day==i.courseTime" style="color: rgb(88 132 211);">{{i.courseName}}</div>
+              <div v-for="(i, index) in dayData" :key="index">
+                <div v-if="data.day==i.wishDate" style="color: rgb(88 132 211);" @click="wishDt">
+                  <el-card style="height: 48px;background-color: #fef0f0;border-color: #fde2e2;color: #f56c6c;font-size: 12px;margin-top: 5px;" >
+                    {{ i.name  }}
+                  </el-card>
+                </div>
               </div>
             </div>
           </template>
@@ -24,18 +40,40 @@
       </el-main>
     </el-card>
     </el-container>
+
+    
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-col :span="24">
+          <el-form-item
+            label="计划日期："
+            prop="wishDate"
+          >
+            <el-date-picker
+              v-model="form.wishDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { userPreference, updatePreference } from "@/api/trave/trave";
+import { wishList, updatePreference,removeAttractionsUser } from "@/api/trave/trave";
 
 export default {
   name: "Online",
   data() {
     return {
 			nowdate: new Date(),
-      dayTime: ["2023-05-09"],
+      dayData: [],
 			dataTime: null,
 			dataTimeY: null,
 			dataTimeM: null,
@@ -49,6 +87,7 @@ export default {
       open: false,
       form: {
       },
+      wish:[],
     };
   },
   created() {
@@ -120,26 +159,50 @@ export default {
 			console.log(data.day)
 		},
     getList(){
-      listCourse().then(response => {
-        this.dayTime = response.data;
-        console.info(this.dayTime)
+      wishList({}).then(response => {
+        this.wish = response.data
       });
+    },
+    wishDt(){
+      alert(1)
+    },
+    addWish(item){
+      this.form = item
+      console.log(this.form)
+      this.open = true
+      this.title = "选择计划时间"
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.form = {};
+    },
+    toIndex(){
+      this.$router.push({ path: '/index'});
+    },
+    removeWith(item){
+      let params = {"attractionsId":item.id}
+      removeAttractionsUser(params).then(response => {
+            if(response.code === 200){
+              this.$modal.msgSuccess("取消心愿成功");
+              this.getList()
+            }else{
+              this.$modal.msgError(response.msg);
+            }
+          });
     },
     /** 提交按钮 */
     submitForm: function() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-            updatePreference(this.form).then(response => {
-              if(response.code === 200){
-                this.$modal.msgSuccess("提交成功");
-                this.open = false;
-                this.getList();
-              }else{
-                this.$modal.msgError("提交失败");
-              }
-            });
-        }
-      });
+      let params = Object.assign({}, this.form);
+      console.log(params)
+      if(params.wishDate === undefined){
+        this.$modal.msgError("请选择计划日期");
+        return;
+      }
+      var dateobj_toString = params.wishDate.toISOString().slice(0, 10)
+      params.wishDate = dateobj_toString
+      this.dayData.push(params)
+      this.cancel()
     },
   }
 };

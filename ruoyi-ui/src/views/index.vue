@@ -1,6 +1,15 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" >
+      <el-form-item label="景点地址" prop="name" >
+        <el-input
+          v-model="queryParams.address"
+          placeholder="请输入景点地址"
+          clearable
+          @keyup.enter.native="handleQuery"
+          v-loading.fullscreen.lock="loading"
+        />
+      </el-form-item>
       <el-form-item label="景点名称" prop="name" >
         <el-input
           v-model="queryParams.name"
@@ -62,7 +71,7 @@
 
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-image :src="this.form.image" style="cursor: pointer;"></el-image>
-      <el-descriptions class="margin-top" :column="1" :size="size" border>
+      <el-descriptions class="margin-top" :column="1" border>
         <template slot="extra" >
             <div v-if="this.form.wish === false" @click="onwish(true)" style="margin-top: 10px;">
               <el-button type="warning" icon="el-icon-star-off" circle></el-button>
@@ -122,7 +131,7 @@
 </template>
 
 <script>
-import { cpmputList, saveAttractionsUser,removeAttractionsUser } from "@/api/trave/trave";
+import { cpmputList, saveAttractionsUser,removeAttractionsUser,userPreference } from "@/api/trave/trave";
 
 export default {
   name: "Online",
@@ -148,7 +157,15 @@ export default {
     };
   },
   created() {
-    this.getList();
+    userPreference().then(response => {
+        if(response.data != undefined){
+          this.getList();
+        }else{
+          this.loading = false
+          this.$router.push({ path: '/travel/preference'});
+          this.$modal.msgSuccess("请先填写偏好");
+        }
+      });
   },
   methods: {
     /** 查询登录日志列表 */

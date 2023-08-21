@@ -56,6 +56,7 @@
           </el-rate>
         </template>
       </el-table-column>
+      <el-table-column label="景点城市" align="center" prop="city" :show-overflow-tooltip="true"/>
       <el-table-column label="景点地址" align="center" prop="address" :show-overflow-tooltip="true"/>
       <el-table-column label="标签" align="center" prop="typeName" :show-overflow-tooltip="true" >
         <template v-slot:default="scope">
@@ -145,6 +146,14 @@
             show-text>
           </el-rate>
         </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item
+            label="景点城市："
+            prop="city"
+          >
+          <el-input v-model="form.city" placeholder="请输入景点城市" />
+          </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item

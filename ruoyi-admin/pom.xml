@@ -54,12 +54,6 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-travel</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-travel</artifactId>
-            <version>3.8.5</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>

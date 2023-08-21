@@ -112,8 +112,12 @@ public class TravelManagerServiceImpl implements TravelManagerService {
     public List<Attractions> selectCpmputList(AttractionsQuery query) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         UserPreference userPreference = userPreferenceMapper.selectByUserId(user.getUserId());
+        if (userPreference == null){
+            userPreference = new UserPreference();
+        }
         List<Attractions> resList = attractionsMapper.selectList(new Attractions(){{
             setName(query.getName());
+            setAddress(query.getAddress());
         }});
         long daysBetween = -1;
         LocalDate startDate = null;
@@ -125,6 +129,7 @@ public class TravelManagerServiceImpl implements TravelManagerService {
         }
         long finalDaysBetween = daysBetween;
         LocalDate finalStartDate = startDate;
+        UserPreference finalUserPreference = userPreference;
         resList.forEach(attractions -> {
             /**
              * 获取标签
@@ -160,19 +165,19 @@ public class TravelManagerServiceImpl implements TravelManagerService {
                 LocalDate date = finalStartDate.plusDays(i);
                 String season = getSeason(date);
                 // 季节分数/天数=每日得分
-                BigDecimal bigDecimal = new BigDecimal(hashMap.get(season)).divide(new BigDecimal(finalDaysBetween)).add(new BigDecimal(score));
+                BigDecimal bigDecimal = new BigDecimal(hashMap.get(season)).divide(new BigDecimal(finalDaysBetween),4, BigDecimal.ROUND_HALF_UP).add(new BigDecimal(score));
                 score = bigDecimal.toString();
             }
             /**
              * 计算偏好权重得分
              */
             HashMap<String,String> preferenceMap = new HashMap();
-            preferenceMap.put("1",StringUtils.isEmpty(userPreference.getPreference1()) ? "0" : userPreference.getPreference1());
-            preferenceMap.put("2",StringUtils.isEmpty(userPreference.getPreference2()) ? "0" : userPreference.getPreference2());
-            preferenceMap.put("3",StringUtils.isEmpty(userPreference.getPreference3()) ? "0" : userPreference.getPreference3());
-            preferenceMap.put("4",StringUtils.isEmpty(userPreference.getPreference4()) ? "0" : userPreference.getPreference4());
-            preferenceMap.put("5",StringUtils.isEmpty(userPreference.getPreference5()) ? "0" : userPreference.getPreference5());
-            preferenceMap.put("6",StringUtils.isEmpty(userPreference.getPreference6()) ? "0" : userPreference.getPreference6());
+            preferenceMap.put("1",StringUtils.isEmpty(finalUserPreference.getPreference1()) ? "0" : finalUserPreference.getPreference1());
+            preferenceMap.put("2",StringUtils.isEmpty(finalUserPreference.getPreference2()) ? "0" : finalUserPreference.getPreference2());
+            preferenceMap.put("3",StringUtils.isEmpty(finalUserPreference.getPreference3()) ? "0" : finalUserPreference.getPreference3());
+            preferenceMap.put("4",StringUtils.isEmpty(finalUserPreference.getPreference4()) ? "0" : finalUserPreference.getPreference4());
+            preferenceMap.put("5",StringUtils.isEmpty(finalUserPreference.getPreference5()) ? "0" : finalUserPreference.getPreference5());
+            preferenceMap.put("6",StringUtils.isEmpty(finalUserPreference.getPreference6()) ? "0" : finalUserPreference.getPreference6());
             double dscore = 0.00;
             if (StringUtils.isNotEmpty(attractions.getPreferenceType())){
                 String wscore = "0";
@@ -190,8 +195,18 @@ public class TravelManagerServiceImpl implements TravelManagerService {
             }
             attractions.setScore(dscore);
         });
-        List collect = resList.stream().sorted((s1, s2) -> s2.getScore().compareTo(s1.getScore())).collect(Collectors.toList());
-
+        List<Attractions> collect = resList.stream().sorted((s1, s2) -> s2.getScore().compareTo(s1.getScore())).collect(Collectors.toList());
+        Integer max = Integer.valueOf((int) (collect.size() * 0.1));
+        Integer bet = Integer.valueOf((int) (collect.size() * 0.4));
+        for (int j = 0; j < collect.size(); j++) {
+            if (j <= max){
+                collect.get(j).setRecommended(5);
+            }else if(j > max && j <= bet){
+                collect.get(j).setRecommended(4);
+            }else{
+                collect.get(j).setRecommended(3);
+            }
+        }
         return collect;
     }
 
@@ -213,6 +228,21 @@ public class TravelManagerServiceImpl implements TravelManagerService {
         attractions.setUserId(user.getUserId().intValue());
         attractionsUserMapper.deleteByUserId(attractions);
         return AjaxResult.success();
+    }
+
+    @Override
+    public List wishList() {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        List<Attractions> list = attractionsUserMapper.selectByUserIdList(user.getUserId());
+        Map<String,List<Attractions>> r = list.stream().collect(Collectors.groupingBy(Attractions::getCity));
+        List res = new ArrayList();
+        r.keySet().forEach(key->{
+            HashMap hashMap = new HashMap();
+            hashMap.put("city",key);
+            hashMap.put("data",r.get(key));
+            res.add(hashMap);
+        });
+        return res;
     }
 
 

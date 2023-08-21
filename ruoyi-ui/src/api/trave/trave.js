@@ -77,21 +77,10 @@ export function removeAttractionsUser(data) {
 }
 
 
-
-// 查询案件列表
-export function caseList(query) {
+export function wishList(data) {
   return request({
-    url: '/encryption/file/caseList',
-    method: 'get',
-    params: query
-  })
-}
-
-// 上传文件
-export function upload(data) {
-  return request({
-    url: '/common/upload',
+    url: '/travel/attractions/wishList',
     method: 'post',
-    data: data
+    params: data
   })
 }

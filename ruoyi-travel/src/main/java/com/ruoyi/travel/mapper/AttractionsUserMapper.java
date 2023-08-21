@@ -4,6 +4,8 @@ import com.ruoyi.travel.domain.Attractions;
 import com.ruoyi.travel.domain.AttractionsUser;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
 * @author mac
 * @description 针对表【attractions_user】的数据库操作Mapper
@@ -28,4 +30,6 @@ public interface AttractionsUserMapper {
     void deleteByUserId(AttractionsUser attractions);
 
     AttractionsUser selectByUserId(AttractionsUser attractions);
+
+    List<Attractions> selectByUserIdList(Long userId);
 }

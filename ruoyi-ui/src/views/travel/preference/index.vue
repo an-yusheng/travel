@@ -98,7 +98,9 @@ export default {
     getList() {
       this.loading = true;
       userPreference(this.queryParams).then(response => {
-        this.form = response.data;
+        if(response.data != undefined){
+          this.form = response.data;
+        }
         this.loading = false;
       });
     },

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 旅行管理
@@ -104,4 +105,17 @@ public class TravelManagerController extends BaseController {
             return AjaxResult.error();
         }
     }
+
+    @PostMapping("/attractions/wishList")
+    public AjaxResult wishList()
+    {
+        try{
+            List r = travelManagerService.wishList();
+            return AjaxResult.success(r);
+        }catch (Exception e){
+            e.printStackTrace();
+            return AjaxResult.error();
+        }
+    }
+
 }

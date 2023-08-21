@@ -7,6 +7,7 @@ import com.ruoyi.travel.domain.UserPreference;
 import com.ruoyi.travel.dto.AttractionsQuery;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TravelManagerService {
     List<Attractions> selectAttractionsList(Attractions attractions);
@@ -26,4 +27,6 @@ public interface TravelManagerService {
     AjaxResult saveAttractionsUser(AttractionsUser attractions);
 
     AjaxResult removeAttractionsUser(AttractionsUser attractions);
+
+    List wishList();
 }
